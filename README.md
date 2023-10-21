@@ -1,4 +1,4 @@
 # DiscordMusicBot
 
-##Supported Platforms
+## Supported Platforms
 - Youtube
