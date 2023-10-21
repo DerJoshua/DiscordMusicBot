@@ -1,1 +1,3 @@
-# DiscordMusciBot
+# DiscordMusicBot
+##Supported Platforms
+- Youtube
