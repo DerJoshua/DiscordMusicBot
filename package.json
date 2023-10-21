@@ -1,8 +1,11 @@
 {
   "dependencies": {
+    "@discordjs/builders": "^1.6.5",
     "@discordjs/rest": "^2.0.1",
+    "@discordjs/voice": "^0.16.0",
     "discord-api-types": "^0.37.60",
     "discord.js": "^14.13.0",
+    "libsodium-wrappers": "^0.7.13",
     "ytdl-core": "^4.11.5"
   }
 }

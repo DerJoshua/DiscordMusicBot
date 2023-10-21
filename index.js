@@ -1,14 +1,17 @@
+const { Client, Intents, Collection, IntentsBitField } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const config = require('./config.json');
+const ytdl = require('ytdl-core')
 const fs = require('node:fs');
-
+const commandCol = new Collection();
 const commands = [];
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
 	const command = require(`./commands/${file}`);
-	commands.push(command.data.toJSON());
+	commandCol.set(command.data.name, command);
+    commands.push(command.data.toJSON());
 }
 const rest = new REST({ version: '9' }).setToken(config.token);
 
@@ -21,33 +24,18 @@ const rest = new REST({ version: '9' }).setToken(config.token);
         console.error(error);
     }
 })();
-const { Client, Intents } = require('discord.js');
-const client = new Client({ intents: [1 << 0] });
+
+const client = new Client({ intents: [IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildVoiceStates] });
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
-
 client.on('interactionCreate', async interaction => {
-    if (!interaction.isCommand()) return;
-
-    if (interaction.commandName === 'ping') {
-        await interaction.reply({content: 'Pong!', ephemeral: true});
-    }
-    const serverQueue = queue.get(interaction.guildId);
-
-    if (interaction.commandName === 'play') {
-        execute(message, serverQueue);
-        return;
-    } else if (interaction.commandName === 'skip') {
-        skip(message, serverQueue);
-        return;
-    } else if (interaction.commandName === 'stop') {
-        stop(message, serverQueue);
-        return;
-    } else {
-        await interaction.reply({content: "You need to enter a valid command!", ephemeral: true});
-    }
+    if (!interaction.isChatInputCommand()) return;
+    const command = commandCol.get(interaction.commandName);
+	if (!command) return;
+	await command.execute(interaction);
 });
+const queue = new Map();
 
 client.login(config.token);

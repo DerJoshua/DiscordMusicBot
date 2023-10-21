@@ -1,5 +1,10 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
-const data = new SlashCommandBuilder()
-	.setName('stop')
-	.setDescription('Stop the playback')
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('stop')
+        .setDescription('Stop the playback'),
+    async execute(interaction){
+        
+    }
+}
