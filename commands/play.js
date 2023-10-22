@@ -9,7 +9,7 @@ module.exports = {
 		.addStringOption(option =>
 			option.setName('song')
 				.setDescription('The song url to play back')
-				.setMaxLength(50)
+				.setMaxLength(100)
 				.setRequired(true)),
 	async execute(interaction) {
 		const voiceChannel = interaction.member.voice.channel;
@@ -37,6 +37,6 @@ module.exports = {
 		AudioManager.addSong(interaction.guildId, song);
 		//Trigger if idle
 		AudioManager.bump(interaction.guildId)
-		return await interaction.reply(`${song.title} has been added to the queue!`);
+		return await interaction.reply({content: `Added to queue: ${song.title} - ${song.author}`, ephemeral: true});
 	}
 }

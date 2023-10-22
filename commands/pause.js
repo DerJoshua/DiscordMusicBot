@@ -3,10 +3,10 @@ const AudioManager = require('../AudioManager');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('skip')
-        .setDescription('Skip the current song'),
+        .setName('pause')
+        .setDescription('Pause the playback'),
     async execute(interaction){
-        AudioManager.skip(interaction.guildId);
-        interaction.reply({content: 'Skipped!' ,ephemeral: true});
+        AudioManager.pause(interaction.guildId);
+        interaction.reply({content: 'Paused', ephemeral: true})
     }
 }

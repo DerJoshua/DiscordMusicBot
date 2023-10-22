@@ -2,7 +2,6 @@ const { Client, Intents, Collection, IntentsBitField } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const config = require('./config.json');
-const ytdl = require('ytdl-core')
 const fs = require('node:fs');
 const commandCol = new Collection();
 const commands = [];
@@ -18,7 +17,7 @@ const rest = new REST({ version: '9' }).setToken(config.token);
 (async () => {
     try {
         console.log('Started refreshing application (/) commands.');
-        await rest.put(Routes.applicationGuildCommands('962650700767174706', '962649184094281738'),{ body: commands });
+        await rest.put(Routes.applicationCommands('962650700767174706'),{ body: commands });
         console.log('Successfully reloaded application (/) commands.');
     } catch (error) {
         console.error(error);

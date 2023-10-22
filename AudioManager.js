@@ -13,8 +13,7 @@ module.exports = {
     },
     addGuildQueue(guildId){
         var audioPlayer = createAudioPlayer()
-        .on('error', () => {getNextSong();})
-        .on(AudioPlayerStatus.Idle, () => getNextSong());
+        .on('error', (err) => {console.log(`Test: ${err}`);  queue.get(guildId).songs.shift(); this.play(guildId);})
         const queueContruct = {
             songs: [],
             player: audioPlayer,
@@ -25,29 +24,57 @@ module.exports = {
     },
     async getSongInfo(url){
         songInfo = await ytdl.getInfo(url);
-        return song = {title: songInfo.videoDetails.title, url: songInfo.videoDetails.video_url,};
+        return song = {title: songInfo.videoDetails.title, url: songInfo.videoDetails.video_url, author: songInfo.videoDetails.author.name, icon: songInfo.videoDetails.author.thumbnails[0].url, channel_url: songInfo.videoDetails.author.user_url};
     },
-    async joinVoiceChannel(channelId, guildId, voiceAdapterCreator){
+    joinVoiceChannel(channelId, guildId, voiceAdapterCreator){
         const connection = joinVC({channelId: channelId, guildId: guildId, adapterCreator: voiceAdapterCreator});
         connection.on(VoiceConnectionStatus.Ready, () => {connection.subscribe(queue.get(guildId).player)});
         return connection;
     },
-    async addSong(guildId, song){
-        console.log(queue.has(guildId))
+    addSong(guildId, song){
         queue.get(guildId).songs.push(song);
     },
-    async bump(guildId){
+    bump(guildId){
         if(queue.get(guildId).player.state.status === 'idle'){
             this.play(guildId);
         }
     },
-    async play(guildId){
+    play(guildId){
         if (queue.get(guildId).songs.length === 0) {
             getVoiceConnection(guildId).destroy();
-            queue.delete(guild.id);
+            queue.delete(guildId);
             return;
         }
-        queue.get(guildId).player.play(createAudioResource(ytdl(queue.get(guildId).songs[0].url)));
+        const player = queue.get(guildId).player;
+        const audio = ytdl(queue.get(guildId).songs[0].url, {
+            filter: 'audioonly',
+            fmt: 'mp3',
+            highWaterMark: 1 << 30,
+            liveBuffer: 10000,
+            dlChunkSize: 4096,
+            bitrate: 128,
+            quality: 'lowestaudio'
+        }).on('end', () => {queue.get(guildId).songs.shift(); this.play(guildId)}).on('error', (err) => {console.log(err);})
+        player.play(createAudioResource(audio));
+    },
+    skip(guildId){
+        queue.get(guildId).player.stop();
         queue.get(guildId).songs.shift();
+        this.play(guildId);
+    },
+    stop(guildId){
+        if(getVoiceConnection(guildId)){
+            getVoiceConnection(guildId).destroy();
+        }
+        if(queue.get(guildId)){
+            queue.delete(guildId);
+        }
+    },
+    pause(guildId){
+        queue.get(guildId).player.pause();
+    },
+    resume(guildId){
+        queue.get(guildId).player.unpause();
     }
+
 };
