@@ -14,6 +14,7 @@ module.exports = {
     addGuildQueue(guildId){
         var audioPlayer = createAudioPlayer()
         .on('error', (err) => {console.log(`Test: ${err}`);  queue.get(guildId).songs.shift(); this.play(guildId);})
+        .on('stateChange', (old, neu) => {if(!(neu.status === AudioPlayerStatus.Idle)) return; console.log(`Starting next song`);  queue.get(guildId).songs.shift(); this.play(guildId);})
         const queueContruct = {
             songs: [],
             player: audioPlayer,
@@ -54,7 +55,7 @@ module.exports = {
             dlChunkSize: 4096,
             bitrate: 128,
             quality: 'lowestaudio'
-        }).on('end', () => {queue.get(guildId).songs.shift(); this.play(guildId)}).on('error', (err) => {console.log(err);})
+        });
         player.play(createAudioResource(audio));
     },
     skip(guildId){
