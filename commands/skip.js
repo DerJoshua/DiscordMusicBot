@@ -6,7 +6,7 @@ module.exports = {
         .setName('skip')
         .setDescription('Skip the current song'),
     async execute(interaction){
-        AudioManager.skip(interaction.guildId);
+        if(!AudioManager.getGuildQueue(interaction.guildId)){await interaction.reply({content: 'Queue is empty', ephemeral: true}); return;}
         interaction.reply({content: 'Skipped!' ,ephemeral: true});
     }
 }

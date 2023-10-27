@@ -59,6 +59,7 @@ module.exports = {
         player.play(createAudioResource(audio));
     },
     skip(guildId){
+        if(!queue.get(guildId)) return false;
         queue.get(guildId).player.stop();
         queue.get(guildId).songs.shift();
         this.play(guildId);

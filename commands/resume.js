@@ -7,6 +7,6 @@ module.exports = {
         .setDescription('Resume the playback'),
     async execute(interaction){
         AudioManager.resume(interaction.guildId);
-        interaction.reply({content: 'Resumed', ephemeral: true})
+        interaction.reply({content: 'Resumed', ephemeral: true});
     }
 }
